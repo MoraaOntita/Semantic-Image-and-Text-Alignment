@@ -1,11 +1,9 @@
 import os
-from agents.image_agent import ImageAgent
-from agents.enhanced_text_agent import EnhancedTextAgent
-from agents.text_extraction_agent import TextExtractionAgent
-from agents.metadata_agent import MetadataAgent
-from agents.color_agent import ColorAgent
-from agents.image_composition_agent import ImageCompositionAgent
 from PIL import Image
+from agents.image.image_analysis_agent import ImageAnalysisAgent
+from agents.text.text_analysis_agent import TextAnalysisAgent
+from agents.critic.critic_grading_agent import CriticGradingAgent
+from agents.autogen.autogen_agent import AutoGenAgent
 import config
 
 def main():
@@ -13,37 +11,28 @@ def main():
     image_files = [os.path.join(config.IMAGES_DIR, f) for f in os.listdir(config.IMAGES_DIR) if f.endswith(('png', 'jpg', 'jpeg'))]
 
     # Initialize agents
-    image_agent = ImageAgent()
-    text_agent = EnhancedTextAgent()
-    text_extraction_agent = TextExtractionAgent()
-    metadata_agent = MetadataAgent()
-    color_agent = ColorAgent()
-    composition_agent = ImageCompositionAgent()
+    image_analysis_agent = ImageAnalysisAgent()
+    text_analysis_agent = TextAnalysisAgent()
+    critic_grading_agent = CriticGradingAgent()
+    autogen_agent = AutoGenAgent()
 
-    assets = [Image.open(image_file) for image_file in image_files]
+    assets = [{'image': Image.open(image_file), 'description': "Sample description for analysis"} for image_file in image_files]
 
-    for image_file in image_files:
-        print(f"Processing image: {image_file}")
+    for asset in assets:
+        print(f"Processing image: {asset['image'].filename}")
 
         # Perform tasks with agents
-        image_agent.perform_task(image_file)
-        text_extraction_agent.perform_task(image_file)
-        metadata_agent.perform_task(image_file)
-        color_agent.perform_task(image_file)
+        image_analysis = image_analysis_agent.analyze_image(asset['image'])
+        text_analysis = text_analysis_agent.narrative_understanding(asset['description'])
 
-    # Define a simple layout for demonstration purposes
-    layout = {
-        'positions': [(0, 0), (200, 200), (400, 400)],  # Example positions
-        'sizes': [(100, 100), (150, 150), (200, 200)],  # Example sizes
-        'orientations': [0, 45, 90]  # Example orientations
-    }
+        asset.update({'image_analysis': image_analysis, 'text_analysis': text_analysis})
 
-    # Perform image composition
-    composed_frame = composition_agent.compose_images(assets, layout)
-    if composed_frame:
-        composed_frame.show()
+        analysis_result = critic_grading_agent.analyze_asset(asset)
+        print(f"Asset Analysis Result: {analysis_result}")
 
-    text_agent.perform_task(config.JSON_FILE_PATH)
+        if analysis_result['grade'] < critic_grading_agent.threshold:
+            edited_asset = autogen_agent.edit_asset(asset, analysis_result['critique'])
+            print(f"Edited Asset: {edited_asset}")
 
 if __name__ == "__main__":
     main()

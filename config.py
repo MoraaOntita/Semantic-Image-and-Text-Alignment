@@ -9,3 +9,4 @@ IMAGES_DIR = os.path.join(DATA_DIR, 'adludio_storyboard_examples')
 JSON_FILE_PATH = os.path.join(DATA_DIR, 'concepts.json')
 COMPOSED_IMAGE_PATH = os.path.join(BASE_DIR, 'composed_image.png')
 
+IMAGES_DIR = '/home/moraa/Documents/10_academy/week-12/data/adludio_storyboard_examples'

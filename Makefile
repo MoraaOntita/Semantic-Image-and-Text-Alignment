@@ -1,9 +1,10 @@
 # Variables
 PYTHON = python
 SCRIPT = main.py
+REQUIREMENTS = requirements.txt
 
 # Targets
-.PHONY: all run env clean
+.PHONY: all run env clean install
 
 all: run
 
@@ -20,3 +21,7 @@ clean:
 	@echo "Cleaning up temporary files..."
 	@find . -name '*.pyc' -delete
 	@find . -name '__pycache__' -type d -exec rm -r {} +
+
+install:
+	@echo "Installing required packages..."
+	@pip install -r $(REQUIREMENTS)
